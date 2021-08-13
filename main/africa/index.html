@@ -146,7 +146,7 @@ using EcoSISTEM.ClimatePref
 using EcoSISTEM.Units
 using Unitful
 using Unitful.DefaultSymbols
-using JLD
+using JLD2
 using Printf
 file = &quot;Africa.tif&quot;
 africa = readfile(file, -25°, 50°, -35°, 40°)
@@ -203,7 +203,7 @@ function simulate!(eco::Ecosystem, times::Unitful.Time, timestep::Unitful.Time, 
       update!(eco, timestep);
       # Save cache of abundances
       if mod(time_seq[i], cacheInterval) == 0year
-          JLD.save(joinpath(cacheFolder, scenario_name * (@sprintf &quot;%02d.jld&quot; uconvert(NoUnits,time_seq[i]/cacheInterval))), &quot;abun&quot;, eco.abundances.matrix)
+          @save (joinpath(cacheFolder, scenario_name * (@sprintf &quot;%02d.jld2&quot; uconvert(NoUnits,time_seq[i]/cacheInterval))) abun = eco.abundances.matrix
       end
   end
 end
@@ -219,7 +219,7 @@ using EcoSISTEM.ClimatePref
 using EcoSISTEM.Units
 using Unitful
 using Unitful.DefaultSymbols
-using JLD
+using JLD2
 using Printf
 
 file = &quot;Africa.tif&quot;
@@ -273,10 +273,10 @@ lensim = length(0years:record_interval:times)
 @time simulate!(eco, burnin, timestep)
 @time simulate!(eco, times, timestep, record_interval, &quot;examples/Biodiversity&quot;, &quot;Africa_run_coexist&quot;);
 
-using JLD
+using JLD2
 using Plots
 using Diversity
-abuns = load(&quot;examples/Biodiversity/Africa_run_coexist100.jld&quot;, &quot;abun&quot;)
+abuns = @load &quot;examples/Biodiversity/Africa_run_coexist100.jld2&quot; abun
 meta = Metacommunity(abuns)
 div = norm_sub_alpha(meta, 0)
 sumabuns = reshape(div[!, :diversity], 100, 100)
@@ -288,7 +288,7 @@ heatmap(sumabuns,
     clim = (0, 50_000), margin = 0.5 * Plots.mm,
     title = &quot;A&quot;, titleloc = :left)
 
-abuns = load(&quot;examples/Biodiversity/Africa_run50.jld&quot;, &quot;abun&quot;)
+abuns = @load &quot;examples/Biodiversity/Africa_run50.jld2&quot; abun
 meta = Metacommunity(abuns)
 div = norm_sub_alpha(meta, 0)
 sumabuns = reshape(div[!, :diversity], 100, 100)
@@ -300,7 +300,7 @@ heatmap!(sumabuns,
     clim = (0, 50_000), right_margin = 2.0 * Plots.mm,
     title = &quot;B&quot;, titleloc = :left)
 
-abuns = load(&quot;examples/Biodiversity/Africa_run100.jld&quot;, &quot;abun&quot;)
+abuns = @load &quot;examples/Biodiversity/Africa_run100.jld2&quot; abun
 meta = Metacommunity(abuns)
 div = norm_sub_alpha(meta, 0)
 sumabuns = reshape(div[!, :diversity], 100, 100)
@@ -313,7 +313,7 @@ heatmap!(sumabuns,
     title = &quot;C&quot;, titleloc = :left)
 
 
-abuns = load(&quot;examples/Biodiversity/Africa_run50.jld&quot;, &quot;abun&quot;)
+abuns = @load &quot;examples/Biodiversity/Africa_run50.jld2&quot; abun
 meta = Metacommunity(abuns)
 div = norm_sub_rho(meta, 1.0)
 sumabuns = reshape(div[!, :diversity], 100, 100)
@@ -323,4 +323,4 @@ heatmap!(sumabuns,
     grid = false, color = :algae,
     aspect_ratio = 1, subplot = 4,
      right_margin = 2.0 * Plots.mm,
-    title = &quot;D&quot;, titleloc = :left, clim = (0, 1))</code></pre><p><img src="../Africa.svg" alt/> <em>Figure 2: 100 year simulations of Africa with 50,000 species. (A) Species richness after 100 years of simulation with all species equal. (B) Species richness after 50 years, with one specialist introduced. (C) Species richness after 100 years, with one specialist introduced. (D) Representativeness after 50 years with one specialist introduced (0 is completely unrepresentative of the ecosystem as a whole, 1 is completely representative).</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 3 August 2021 23:21">Tuesday 3 August 2021</span>. Using Julia version 1.6.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    title = &quot;D&quot;, titleloc = :left, clim = (0, 1))</code></pre><p><img src="../Africa.svg" alt/> <em>Figure 2: 100 year simulations of Africa with 50,000 species. (A) Species richness after 100 years of simulation with all species equal. (B) Species richness after 50 years, with one specialist introduced. (C) Species richness after 100 years, with one specialist introduced. (D) Representativeness after 50 years with one specialist introduced (0 is completely unrepresentative of the ecosystem as a whole, 1 is completely representative).</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples/">« Examples</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 13 August 2021 14:04">Friday 13 August 2021</span>. Using Julia version 1.6.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
